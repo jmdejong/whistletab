@@ -17,18 +17,24 @@ window.Encoder = (function(){
     }
     
     function encode(text){
-         let converted = [];
-         for (let char of text){
-             let convertedChar = conversionEnc[char];
-             if (convertedChar === undefined){
-                 convertedChar = char;
-             }
-             converted.push(convertedChar);
-         }
-         return encodeURIComponent(converted.join(""));
+        if (text === "" || typeof text !== "string"){
+            return null;
+        }
+        let converted = [];
+        for (let char of text){
+            let convertedChar = conversionEnc[char];
+            if (convertedChar === undefined){
+                convertedChar = char;
+            }
+            converted.push(convertedChar);
+        }
+        return encodeURIComponent(converted.join(""));
     }
     
     function decode(encoded){
+        if (encoded === "" || typeof encoded !== "string"){
+            return null;
+        }
         let decoded = [];
         for (let char of decodeURIComponent(encoded)){
             let convertedChar = conversionDec[char];
