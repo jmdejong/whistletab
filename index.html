@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
     <title>Tin Whistle Tab Creator</title>
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed|Nanum+Gothic" rel="stylesheet">
-    <link href="/whistletab/whistletab.css" rel="stylesheet">
-    <link rel="shortcut icon" type="image/png" href="/whistletab/favicon.png">
+    <link href="whistletab/whistletab.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="whistletab/favicon.png">
   </head>
-  <body class="<%= serverStore ? 'server-store' : '' %> show-notes show-fingering show-lyrics show-staves">
+  <body class=" show-notes show-fingering show-lyrics show-staves">
     <h1>Tin Whistle Tab Creator</h1>
     <p>For <em>D-tuned</em> whistles. Use <kbd>#</kbd> after a note to indicate sharp, and <kbd>+</kbd> and <kbd>++</kbd> to indicate upper octaves. Spaces and newlines can be used for grouping, and comments, lyrics and headings can be added by starting a new line with <kbd>-</kbd>, <kbd>-&zwnj;-</kbd> and <kbd>-&zwnj;-&zwnj;-</kbd>.</p>
     <p>Display options are at the <a href="#display-options">bottom of the page &darr;</a></p>
@@ -37,9 +38,7 @@
     <form id="saved-tabs-form" action="#" class="no-saved-tabs tab-list">
       <fieldset>
         <legend data-form-name="user">Your tabs</legend>
-        <% if (!serverStore) { %>
-          <p>These tabs are saved in your browser's local storage.</p>
-        <% } %>
+        <p>These tabs are saved in your browser's local storage.</p>
         <div id="tab-list" class="tab-list">
           <label><input type="radio" name="selected-tab-index" value="0" checked>
             Some tab name</label>
@@ -96,17 +95,13 @@
     </template>
 
     <script>
-      window.serverTabs = <%- JSON.stringify(tabs) %>;
+      window.serverTabs = [];
     </script>
 
     <footer>
       <p>Tin Whistle Tab Creator by <a href="http://andyf.me/">Andy Farrell</a>.</p>
     </footer>
-    <% if (serverStore) { %>
-      <script>window.WHISTLETAB_SECRET = '<%= secret %>';</script>
-      <script src="/whistletab/serverstore.js"></script>
-    <% } %>
-    <script src="/whistletab/staff.js"></script>
-    <script src="/whistletab/whistletab.js"></script>
+    <script src="whistletab/staff.js"></script>
+    <script src="whistletab/whistletab.js"></script>
   </body>
 </html>
