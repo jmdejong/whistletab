@@ -503,3 +503,7 @@ footer {
     box-shadow: none;
   }
 }
+
+#share-url {
+  width: 100%;
+}

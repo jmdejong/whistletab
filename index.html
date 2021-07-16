@@ -21,6 +21,11 @@
     <label id="spacing-label">Spacing: <input id="spacing" type="range" min="0" max="10" value="1"></label>
 
     <div id="tab" class="spacing1"></div>
+    
+    <form id="share-url-form" action="#">
+        <label>Sharable url</label>
+        <input id="share-url" readonly></input>
+    </form>
 
     <form id="save-tab-form" action="#">
       <label>
@@ -99,8 +104,12 @@
     </script>
 
     <footer>
-      <p>Tin Whistle Tab Creator by <a href="http://andyf.me/">Andy Farrell</a>.</p>
+      <p>Tin Whistle Tab Creator by <a href="http://andyf.me/">Andy Farrell</a>; modified by <a href="https://troido.nl">troido</a>.</p>
     </footer>
+    <script src="whistletab/tab.js"></script>
+    <script src="whistletab/tabstorage.js"></script>
+    <script src="whistletab/input.js"></script>
+    <script src="whistletab/encoder.js"></script>
     <script src="whistletab/staff.js"></script>
     <script src="whistletab/whistletab.js"></script>
   </body>
