@@ -27,15 +27,15 @@ var input = {
     },
     updateOutput: function () {
         this.output.setTab(this.el.value);
-        this.setShareUrlInput(this.el.value);
+//         this.setShareUrlInput(this.el.value);
     },
     updateSpacing: function () {
         this.output.setSpacing(this.spacing.value);
     },
 
-    setShareUrlInput: function(code){
-        let encoded = Encoder.encode(code);
-        let url = window.location.origin + window.location.pathname + "?s=" + encoded;
-        this.share.value = url;
-    }
+//     setShareUrlInput: function(code){
+//         let encoded = Encoder.encode(code);
+//         let url = window.location.origin + window.location.pathname + "?s=" + encoded;
+//         this.share.value = url;
+//     }
 };

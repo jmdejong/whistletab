@@ -2,7 +2,6 @@
 (function(){
 "use strict";
 
-var APP_TITLE = 'Tin Whistle Tab Creator';
 
 var dataStore = {
     getItem: function (key) {
@@ -28,8 +27,6 @@ window.TabStorage = {
     savedTabsForm: document.querySelector('#saved-tabs-form'),
     serverTabsForm: document.querySelector('#server-tabs-form'),
 
-    printTitle: document.querySelector('#print-title'),
-    tabSourceLink: document.querySelector('#tab-source-link'),
 
     tabInput: null,
 
@@ -37,10 +34,11 @@ window.TabStorage = {
 
     STORAGE_KEY: 'saved-tabs',
 
-    init: function (input) {
+    init: function (controller) {
         var params = this.getHashParams();
 
-        this.tabInput = input;
+        
+        this.controller = controller;
         this.saveTabForm.addEventListener('submit', this.saveTab.bind(this));
 
         this.savedTabsForm.addEventListener('submit', this.loadTab.bind(this));
@@ -61,7 +59,7 @@ window.TabStorage = {
         if (this.getQueryInput()) {
             this.renderSavedTabList(0);
             this.renderSavedTabList(0, true);
-            this.tabInput.setValue(this.getQueryInput());
+            this.controller.setTab(this.getQueryInput());
         } else if (params[0] === 'u') {
             initialIndex = Math.min(params[1], this.savedTabs.length - 1);
             this.renderSavedTabList(initialIndex);
@@ -120,14 +118,7 @@ window.TabStorage = {
             return;
         }
 
-        this.printTitle.innerHTML = this.nameInput.value;
-
-        this.savedTabs.push({
-            tab: this.tabInput.getValue(),
-            spacing: this.tabInput.getSpacing(),
-            name: this.nameInput.value,
-            sourceUrl: this.sourceInput.value
-        });
+        this.savedTabs.push(this.controller.tab);
 
         this.storeTabs();
         this.renderSavedTabList(this.savedTabs.length - 1);
@@ -151,16 +142,6 @@ window.TabStorage = {
         return tabs[this.getSelectedIndex(useServerTabs)];
     },
 
-    setSourceHeading: function (url) {
-        if (url) {
-            this.tabSourceLink.innerHTML = url;
-            this.tabSourceLink.href = url;
-        } else {
-            this.tabSourceLink.innerHTML = 'unknown';
-            this.tabSourceLink.href = '';
-        }
-    },
-
     loadTab: function (event, forceServerTab) {
         var isServerTab = event && event.currentTarget === this.serverTabsForm;
         var tabToLoad;
@@ -174,12 +155,7 @@ window.TabStorage = {
 
         this.setHashParams(isServerTab, this.getSelectedIndex(isServerTab));
 
-        this.tabInput.setValue(tabToLoad.tab);
-        this.tabInput.setSpacing(tabToLoad.spacing);
-        document.title = tabToLoad.name + ' · ' + APP_TITLE;
-        this.printTitle.innerHTML = tabToLoad.name;
-        this.printTitle.scrollIntoView(true, { behaviour: 'smooth' });
-        this.setSourceHeading(tabToLoad.sourceUrl);
+        this.controller.setTab(new Tab(tabToLoad));
     },
 
     overwriteTab: function () {
