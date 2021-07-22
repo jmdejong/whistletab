@@ -253,6 +253,7 @@ class TabView {
         let url = new URL(window.location);
         url.search = tab.toQueryParameters();
         this.share.value = url;
+        document.getElementById("open-share-url").href=url;
     }
 
     setSpacing(toValue) {
