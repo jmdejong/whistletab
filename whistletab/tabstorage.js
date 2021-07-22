@@ -2,6 +2,16 @@
 (function(){
 "use strict";
 
+var DEFAULT_TABS = [
+    {
+        name: 'Basic Scale',
+        tab: 'def#gabc#'
+    },
+    {
+        name: 'Extended Scale',
+        tab: 'def# gab c#\nd+e+f#+ g+a+b+ c#+\nd++e++f#++ g++a++b++ c#++'
+    }
+];
 
 var dataStore = {
     getItem: function (key) {
@@ -15,47 +25,44 @@ var dataStore = {
 
 
 
-window.TabStorage = {
-    nameInput: document.querySelector('#tab-name'),
-    sourceInput: document.querySelector('#tab-source'),
-    savedTabList: document.querySelector('#tab-list'),
-    serverTabList: document.querySelector('#server-tab-list'),
+class TabStorage {
+    savedTabList = document.querySelector('#tab-list');
+    serverTabList = document.querySelector('#server-tab-list');
 
-    deleteButton: document.querySelector('#delete-tab'),
-    overwriteButton: document.querySelector('#overwrite-tab'),
-    saveTabForm: document.querySelector('#save-tab-form'),
-    savedTabsForm: document.querySelector('#saved-tabs-form'),
-    serverTabsForm: document.querySelector('#server-tabs-form'),
+    savedTabsForm = document.querySelector('#saved-tabs-form');
+    serverTabsForm = document.querySelector('#server-tabs-form');
 
 
-    tabInput: null,
+    tabInput = null;
 
-    savedTabs: [],
+    savedTabs = [];
 
-    STORAGE_KEY: 'saved-tabs',
+    STORAGE_KEY = 'saved-tabs';
 
-    init: function (controller) {
-        var params = this.getHashParams();
+    init(controller) {
 
-        
         this.controller = controller;
-        this.saveTabForm.addEventListener('submit', this.saveTab.bind(this));
-
+        
+        document.querySelector('#save-tab-form').addEventListener('submit', this.saveTab.bind(this));
+        document.querySelector('#overwrite-tab').addEventListener('click', this.overwriteTab.bind(this));
+        document.querySelector('#delete-tab').addEventListener('click', this.deleteTab.bind(this));
+        
         this.savedTabsForm.addEventListener('submit', this.loadTab.bind(this));
         this.serverTabsForm.addEventListener('submit', this.loadTab.bind(this));
         this.savedTabsForm.addEventListener('dblclick', this.loadTab.bind(this));
         this.serverTabsForm.addEventListener('dblclick', this.loadTab.bind(this));
 
-        this.overwriteButton.addEventListener('click', this.overwriteTab.bind(this));
-        this.deleteButton.addEventListener('click', this.deleteTab.bind(this));
         this.savedTabsForm.addEventListener('click', this.toggleCollapse.bind(this));
         this.serverTabsForm.addEventListener('click', this.toggleCollapse.bind(this));
+        
 
         // Load and render user tabs list
         this.fetchTabs();
         var initialIndex = 0;
 
 
+        var params = this.getHashParams();
+        
         if (this.getQueryInput()) {
             this.renderSavedTabList(0);
             this.renderSavedTabList(0, true);
@@ -71,21 +78,22 @@ window.TabStorage = {
             this.renderSavedTabList(initialIndex, true);
             this.loadTab(null, true);
         }
-    },
+    }
     
     
-    getQueryInput: () =>
-        Encoder.decode(
+    getQueryInput() {
+        return Encoder.decode(
             (new URL(document.location))
                 .searchParams.get("s")
-        ),
+        )
+    }
 
-    setHashParams: function (isServer, index) {
+    setHashParams(isServer, index) {
         var params = [isServer ? 's' : 'u', index.toString()];
         window.location.hash = params.join('');
-    },
+    }
 
-    getHashParams: function () {
+    getHashParams() {
         var params = ['u', 0];
 
         if (window.location.hash) {
@@ -96,9 +104,9 @@ window.TabStorage = {
         params[1] = parseInt(params[1], 10);
 
         return params;
-    },
+    }
 
-    fetchTabs: function () {
+    fetchTabs() {
         let jsonData = dataStore.getItem(this.STORAGE_KEY);
         if (jsonData) {
             this.savedTabs = JSON.parse(jsonData);
@@ -106,26 +114,27 @@ window.TabStorage = {
             this.savedTabs = DEFAULT_TABS;
             this.storeTabs();
         }
-    },
-    storeTabs: function () {
+    }
+    
+    storeTabs() {
         dataStore.setItem(this.STORAGE_KEY, JSON.stringify(this.savedTabs));
-    },
+    }
 
-    saveTab: function (event) {
+    saveTab(event) {
         event.preventDefault();
-
-        if (!this.nameInput.value) {
+        
+        let tab = this.controller.getTab()
+        if (!tab.name){
             return;
         }
 
-        this.savedTabs.push(this.controller.tab);
+        this.savedTabs.push(tab);
 
         this.storeTabs();
         this.renderSavedTabList(this.savedTabs.length - 1);
-        this.nameInput.value = '';
-    },
+    }
 
-    getSelectedIndex: function (useServerTabs) {
+    getSelectedIndex(useServerTabs) {
         var form = useServerTabs ? this.serverTabsForm : this.savedTabsForm;
         var elements = form.elements['selected-tab-index'];
         var i;
@@ -136,13 +145,14 @@ window.TabStorage = {
         }
 
         return 0;
-    },
-    getSelectedTab: function (useServerTabs) {
+    }
+    
+    getSelectedTab(useServerTabs) {
         var tabs = useServerTabs ? window.serverTabs : this.savedTabs;
         return tabs[this.getSelectedIndex(useServerTabs)];
-    },
+    }
 
-    loadTab: function (event, forceServerTab) {
+    loadTab(event, forceServerTab) {
         var isServerTab = event && event.currentTarget === this.serverTabsForm;
         var tabToLoad;
 
@@ -156,9 +166,9 @@ window.TabStorage = {
         this.setHashParams(isServerTab, this.getSelectedIndex(isServerTab));
 
         this.controller.setTab(new Tab(tabToLoad));
-    },
+    }
 
-    overwriteTab: function () {
+    overwriteTab() {
         var tabToOverwrite = this.getSelectedTab();
         var newName = window.prompt('Tab name:', tabToOverwrite.name);
 
@@ -169,9 +179,9 @@ window.TabStorage = {
             this.storeTabs();
             this.renderSavedTabList(this.getSelectedIndex());
         }
-    },
+    }
 
-    deleteTab: function () {
+    deleteTab() {
         var index = this.getSelectedIndex();
         var tabToDelete = this.getSelectedTab();
 
@@ -183,9 +193,9 @@ window.TabStorage = {
             this.storeTabs();
             this.renderSavedTabList();
         }
-    },
+    }
 
-    renderSavedTabList: function (selectedIndex, useServerTabs) {
+    renderSavedTabList(selectedIndex, useServerTabs) {
         var frag = document.createDocumentFragment();
         var tabs = useServerTabs ? window.serverTabs : this.savedTabs;
         var tabList = useServerTabs ? this.serverTabList : this.savedTabList;
@@ -212,9 +222,9 @@ window.TabStorage = {
 
         tabList.innerHTML = '';
         tabList.appendChild(frag);
-    },
+    }
 
-    toggleCollapse: function (event) {
+    toggleCollapse(event) {
         var form;
         if (!event.target.matches('.tab-list legend')) return;
         switch (event.target.getAttribute('data-form-name')) {
@@ -229,6 +239,8 @@ window.TabStorage = {
         }
         form.classList.toggle('collapsed');
     }
-};
+}
+
+window.TabStorage = TabStorage;
 
 })()

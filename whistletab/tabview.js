@@ -91,6 +91,9 @@ class TabView {
     
     measure1Em() {
         const ul = this.el.querySelector('ul');
+        if (!ul){
+            return;
+        }
         const rect = ul.getBoundingClientRect();
 
         // Fingering elements have a width of 1.2em defined in the CSS.
@@ -224,8 +227,6 @@ class TabView {
 
         this.staves = [];
         this.cachedInput = inputString;
-        
-        this.setShareUrlInput(inputString);
 
         if (lines.length === 0) {
             this.el.innerHTML = '';
@@ -242,9 +243,11 @@ class TabView {
             prevWasNote = !!this.fingerings[note];
             return mapped;
         }, this);
-
+        
         this.el.innerHTML = tabs.join('');
-        this.measure1Em();
+        if (tabs.length !== 0){
+            this.measure1Em();
+        }
     }
 
     refresh() {
@@ -253,9 +256,10 @@ class TabView {
         this.setTab(this.cachedInput);
     }
     
-    setShareUrlInput(code){
-        let encoded = Encoder.encode(code);
-        let url = window.location.origin + window.location.pathname + "?s=" + encoded;
+    setShareUrl(tab){
+        let encoded = Encoder.encode(tab);
+        let url = new URL(window.location);
+        url.search = tab.toQueryParameters();
         this.share.value = url;
     }
 

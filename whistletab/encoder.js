@@ -8,7 +8,8 @@ window.Encoder = (function(){
         " ": "9",
         "\n": "8",
         "#": "7",
-        "+": "6"
+        "+": "6",
+        "/": "5"
     }
     
     let conversionDec = {}

@@ -1,102 +1,68 @@
-
 "use strict";
 const APP_TITLE = 'Tin Whistle Tab Creator';
 
-// function gd(id){
-//     return document.getElementById(id);
-// }
-// 
-// function gv(id){
-//     return gd(id).value;
-// }
 
 class Controller {
     
     constructor(output){
-//         this.tab = {};
         this.output = output;
-//         this.noteInput = null;
-//         this.spacingInput = null;
-//         this.cachedModel = new Model(new Tab({}), {});
-        this.listeners = {}
-        this.getters = {};
+        this.elements = {};
+        this.updaters = []
     }
     
     _listen(id, onChange){
         let el = document.getElementById(id);
-        let get = 
-            el.checked === undefined
-                ? (() => el.value)
-                : (() => el.checked);
-        el.addEventListener("input", e => onchange(get()));
-        this.listeners[id] = onChange
-        this.getters[id] = get;
+        el.addEventListener("input", e => onChange(el));
+        this.elements[id] = el;
+        this.updaters.push(() => onChange(el));
     }
     
     init(){
-        this._listen("notes", this.output.setNotes.bind(this.output));
-        this._listen("spacing", this.output.setSpacing.bind(this.output));
-        this._listen("tab-name", this.output.setName.bind(this.output));
-        this._listen("tab-source", this.output.setSourceHeading.bind(this.output));
-//         let update = e => this.update();
-//         for (let id of ["notes", "spacing", "tab-name", "tab-source"]){
-//             document.getElementById(id).addEventListener("input", update);
-//         }
+        this._listen("notes", el => {
+            this.output.setNotes(el.value);
+            this.output.setShareUrl(this.getTab());
+        });
+        this._listen("spacing", el => {
+            this.output.setSpacing(el.value);
+            this.output.setShareUrl(this.getTab());
+        });
+        this._listen("tab-name", el => {
+            this.output.setName(el.value);
+            this.output.setShareUrl(this.getTab());
+        });
+        this._listen("tab-source", el => {
+            this.output.setSourceHeading(el.value);
+            this.output.setShareUrl(this.getTab());
+        });
+        this.update()
     }
     
-    setTab(){
-        
+    get(id){
+        return this.elements[id];
     }
     
-//     static readModel(){
-//         let tab = new Tab({
-//             tab: gv("notes"),
-//             name: gv("tab-name"),
-//             spacing: gv("spacing"),
-//             sourceUrl: gv("tab-source")
-//         });
-//         let config = {
-//             whiteBackground: gv("white-background"),
-//             showFingering: gv("show-fingering"),
-//             showNotes: gv("show-notes"),
-//             showLyrics: gv("show-lyrics"),
-//             showStaves: gv("show-staves"),
-//             showStaffNotes: gv("show-staff-notes")
-//         };
-//         return new Model(tab, config);
-//     }
+    setTab(tab){
+        console.log(tab);
+        this.get("notes").value = tab.tab;
+        this.get("spacing").value = tab.spacing;
+        this.get("tab-name").value = tab.name;
+        this.get("tab-source").value = tab.sourceUrl;
+        this.update()
+    }
     
-//     onNotesChange(e){
-//         this.tab.notes = this.noteInput.value;
-//         this.update();
-//     }
-//     
-//     onSpacingChange(e){
-//         this.tab.spacing = this.spacingInput.value;
-//         this.update();
-//     }
-//     
-//     setTab(tab){
-//         this.tab = tab;
-//         this.update();
-//     }
+    getTab(){
+        return new Tab({
+            tab: this.get("notes").value,
+            name: this.get("tab-name").value,
+            spacing: this.get("spacing").value,
+            sourceUrl: this.get("tab-source").value
+        });
+    }
     
-//     _updateProperty(model, property, change){
-//         if (this.model[model][property] !== this.previousTab[property]){
-//             change(this.tab[property])
-//             this.previousTab[property] = this.tab[property];
-//         }
-//     }
-//     
-//     update(){
-//         let model = Controller.readModel();
-//         this.updateProperty("notes", notes => this.output.setNotes(notes));
-//         this.updateProperty("spacing", spacing => this.output.setSpacing(spacing));
-//         this.updateProperty("name", name => {
-//             document.title = name + ' · ' + APP_TITLE;
-//         });
-//     }
+    update(){
+        for (let update of this.updaters){
+            update();
+        }
+    }
 }
 
-// window.Controller = Controller;
-// })();

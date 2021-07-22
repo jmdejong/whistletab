@@ -2,7 +2,7 @@
 class Tab {
     
     static fromQueryParameters(queryparams){
-        let paramsPairs = queryparams
+        let paramPairs = queryparams
             .substring(1)
             .split("&")
             .map(s => s.split("="));
@@ -13,11 +13,14 @@ class Tab {
             }
             parameters[keyVal[0]] = keyVal[1];
         }
+        if (!parameters.s){
+            return null;
+        }
         return new Tab({
             tab: Encoder.decode(parameters.s),
             name: Encoder.decode(parameters.n),
-            spacing: Number.parseInt(parameter.p),
-            sourceUrl: Encoder.decode(parameter.c)
+            spacing: Number.parseInt(parameters.p),
+            sourceUrl: Encoder.decode(parameters.c)
         });
     }
     
@@ -29,6 +32,10 @@ class Tab {
     }
     
     toQueryParameters(){
-        return `?s=${Encoder.encode(this.tab)}&t=${Encoder.encode(this.title)}&p=${this.spacing}&c=${Encoder.encode(this.sourceurl)}`
+        let tab = Encoder.encode(this.tab) || "";
+        let name = Encoder.encode(this.name) || "";
+        let spacing = this.spacing || 0;
+        let sourceUrl = Encoder.encode(this.sourceUrl) || "";
+        return `?s=${tab}&n=${name}&p=${spacing}&c=${sourceUrl}`
     }
 }
