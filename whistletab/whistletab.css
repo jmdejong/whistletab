@@ -507,3 +507,9 @@ footer {
 #share-url {
   width: 100%;
 }
+#copy-share-url {
+  margin-left: 20px;
+}
+.url-share {
+    margin-bottom: 24px;
+}

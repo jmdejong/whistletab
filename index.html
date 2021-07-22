@@ -21,13 +21,8 @@
     <label id="spacing-label">Spacing: <input id="spacing" type="range" min="0" max="10" value="1"></label>
 
     <div id="tab" class="spacing1"></div>
-    
-    <form id="share-url-form" action="#">
-        <label>Sharable url</label>
-        <input id="share-url" readonly></input>
-    </form>
 
-    <form id="save-tab-form" action="#">
+    <form id="save-tab-form" onsubmit="">
       <label>
         Tab name:
         <input type="text" id="tab-name">
@@ -36,9 +31,14 @@
         Source:
         <input type="url" id="tab-source">
       </label>
-
-      <button type="submit" id="save-tab">Save</button>
+      <button id="save-tab">Save</button>
     </form>
+    
+    <div class="url-share" onsubmit="">
+        <label>Sharable url</label>
+        <button id="copy-share-url">Copy</button>
+        <input id="share-url" readonly></input>
+    </div>
 
     <form id="saved-tabs-form" action="#" class="no-saved-tabs tab-list">
       <fieldset>
@@ -62,8 +62,8 @@
       <label class="break-float"><input type="checkbox" checked id="show-fingering"> Show fingering</label>
       <label class="break-float"><input type="checkbox" checked id="show-notes"> Show notes</label>
       <label class="break-float"><input type="checkbox" checked id="show-lyrics"> Show lyrics</label>
-      <label class="break-float"><input type="checkbox" checked id="show-staves"> Show staves</label>
-      <label class="break-float"><input type="checkbox" checked id="show-staff-notes"> Show staff notes</label>
+      <label class="break-float"><input type="checkbox" id="show-staves"> Show staves</label>
+      <label class="break-float"><input type="checkbox" id="show-staff-notes"> Show staff notes</label>
     </fieldset>
 
     <template id="tab-entry"><ul class="tab-note">

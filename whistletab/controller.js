@@ -37,12 +37,15 @@ class Controller {
         this.update()
     }
     
+    _toggleClass(el){
+        document.body.classList.toggle(el.id, el.checked);
+    }
+    
     get(id){
         return this.elements[id];
     }
     
     setTab(tab){
-        console.log(tab);
         this.get("notes").value = tab.tab;
         this.get("spacing").value = tab.spacing;
         this.get("tab-name").value = tab.name;

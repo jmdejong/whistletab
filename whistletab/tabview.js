@@ -75,8 +75,7 @@ class TabView {
     
     constructor() {
         
-        this.cachedInput = null;
-        this.showNotes = true;
+        this.showNotes = false;
         this.staves = [];
     }
     
@@ -226,7 +225,6 @@ class TabView {
         var prevWasNote = false;
 
         this.staves = [];
-        this.cachedInput = inputString;
 
         if (lines.length === 0) {
             this.el.innerHTML = '';
@@ -248,12 +246,6 @@ class TabView {
         if (tabs.length !== 0){
             this.measure1Em();
         }
-    }
-
-    refresh() {
-        if (!this.cachedInput) return;
-
-        this.setTab(this.cachedInput);
     }
     
     setShareUrl(tab){

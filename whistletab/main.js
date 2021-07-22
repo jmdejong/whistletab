@@ -1,3 +1,4 @@
+"use strict";
 /*eslint indent: ["warn", 4] */
 (function () {
 
@@ -12,18 +13,22 @@
         controller.setTab(tab);
     }
 
-    document.querySelector('#display-options').addEventListener('change', function (event) {
-        var checkbox;
-        if (event.target.nodeName !== 'INPUT') {
-            return;
+    let options = document.querySelector('#display-options');
+    for (let option of options.getElementsByTagName("input")){
+        let update = () => document.body.classList.toggle(option.id, option.checked);
+        if (option.id === 'show-staff-notes') {
+            update = () => {
+                tabview.showNotes = option.checked;
+                controller.update();
+            }
         }
-
-        checkbox = event.target;
-        document.body.classList.toggle(checkbox.id, checkbox.checked);
-
-        if (checkbox.id === 'show-staff-notes') {
-            tabview.showNotes = checkbox.checked;
-            controller.update();
-        }
+        option.addEventListener("input", update);
+        update()
+    }
+    
+    document.getElementById("copy-share-url").addEventListener("click", e => {
+        document.getElementById("share-url").select();
+        document.execCommand("copy");
     });
+    
 }());
