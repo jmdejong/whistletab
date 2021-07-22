@@ -2,6 +2,17 @@
 (function(){
 "use strict";
 
+var DEFAULT_TABS = [
+    {
+        name: 'Basic Scale',
+        tab: 'def#gabc#'
+    },
+    {
+        name: 'Extended Scale',
+        tab: 'def# gab c#\nd+e+f#+ g+a+b+ c#+\nd++e++f#++ g++a++b++ c#++'
+    }
+];
+
 var APP_TITLE = 'Tin Whistle Tab Creator';
 
 var dataStore = {

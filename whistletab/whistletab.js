@@ -1,17 +1,5 @@
 /*eslint indent: ["warn", 4] */
 (function () {
-    var DEFAULT_TABS = [
-        {
-        name: 'Basic Scale',
-        tab: 'def#gabc#'
-        },
-        {
-        name: 'Extended Scale',
-        tab: 'def# gab c#\nd+e+f#+ g+a+b+ c#+\nd++e++f#++ g++a++b++ c#++'
-        }
-    ];
-
-
 
 
     input.init(Tab);
