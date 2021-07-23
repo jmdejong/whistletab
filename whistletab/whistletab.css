@@ -107,7 +107,7 @@ input[type="url"] {
   width: 20em;
 }
 
-#save-tab-form label + label {
+#saved-tab-form label + label {
   margin-left: 1em;
 }
 
@@ -334,21 +334,11 @@ body:not(.show-fingering, .show-notes) .tab-note { margin: 0; }
 
 .show-staves .staff { display: block; }
 
-form {
-  box-sizing: border-box;
-  margin: 0 0 1em;
-  padding: 0;
-}
 
-form.tab-list {
-  border: 1px solid #ccc;
-  position: relative;
-  background-color: #fafafa;
-}
 
-.tab-list.collapsed label,
-.tab-list.collapsed .form-buttons,
-.tab-list.collapsed p {
+
+
+.collapsed {
   display: none;
 }
 
@@ -390,9 +380,9 @@ input[type="radio"] {
   margin-bottom: 0.5em;
 }
 
-.tab-list legend {
-  position: absolute;
-  top: 1px;
+.legend {
+/*   position: absolute; */
+  top: 0px;
   left: 0;
   right: 0;
   height: 1.7em;
@@ -403,28 +393,25 @@ input[type="radio"] {
   border-bottom: 1px solid #ccc;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   cursor: pointer;
+  margin: 0px;
 }
 
-.tab-list legend:hover {
+.legend:hover {
   background-color: #fff;
   color: #000;
 }
 
-.tab-list legend::before {
+.legend::before {
   display: inline-block;
   width: 1em;
   content: "\2212";
 }
 
-.tab-list.collapsed legend::before {
+.legend::before {
   color: #000;
   content: "+";
 }
 
-.form-buttons {
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
 
 button {
   border: 1px solid #888;
@@ -506,10 +493,31 @@ footer {
 
 #share-url {
   width: 100%;
+  margin: 4px;
 }
 #copy-share-url {
   margin-left: 20px;
 }
 .url-share {
     margin-bottom: 24px;
+    margin-top: 24px;
+}
+
+.saved-tab-name {
+    margin-right: 24px;
+}
+.saved-tab-opener {
+    margin-right: 16px;
+}
+.saved-tab-entry {
+    margin-top: 10px;
+}
+.tab-list-container {
+  border: 1px solid #ccc;
+  position: relative;
+  background-color: #fafafa;
+  margin: 10px;
+}
+#saved-tabs-content {
+    padding: 12px;
 }

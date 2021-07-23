@@ -22,7 +22,7 @@
 
     <div id="tab" class="spacing1"></div>
 
-    <form id="save-tab-form" onsubmit="">
+    <div id="save-tab-form" onsubmit="">
       <label>
         Tab name:
         <input type="text" id="tab-name">
@@ -31,7 +31,6 @@
         Source:
         <input type="url" id="tab-source">
       </label>
-      <button id="save-tab">Save</button>
     </form>
     
     <div class="url-share" onsubmit="">
@@ -41,21 +40,15 @@
         <input id="share-url" readonly></input>
     </div>
 
-    <form id="saved-tabs-form" action="#" class="no-saved-tabs tab-list">
-      <fieldset>
-        <legend data-form-name="user">Your tabs</legend>
-        <p>These tabs are saved in your browser's local storage.</p>
-        <div id="tab-list" class="tab-list">
-          <label><input type="radio" name="selected-tab-index" value="0" checked>
-            Some tab name</label>
+    <div id="saved-tabs-form" onsubmit="" class="no-saved-tabs tab-list tab-list-container">
+        <p id="saved-tabs-legend" class="legend">Your tabs</p>
+        <div id="saved-tabs-content">
+            <p>These tabs are saved in your browser's local storage.</p>
+            <button id="save-tab" onclick="">Save this tab</button>
+            <strong id="overwrite-warning" class="warning" hidden>This will overwrite the existing saved tab with the same name!</strong>
+            <div id="tab-list" class="tab-list">Loading</div>
         </div>
-        <div class="form-buttons">
-          <button type="submit" id="load-tab">Load tab</button>
-          <button type="button" id="overwrite-tab" class="warning">Overwrite tab</button>
-          <button type="button" id="delete-tab" class="danger">Delete tab</button>
-        </div>
-      </fieldset>
-    </form>
+    </div>
 
     <fieldset id="display-options">
       <legend>Display options</legend>
@@ -89,10 +82,6 @@
       </ul>
     </template>
 
-    <script>
-      window.serverTabs = [];
-    </script>
-
     <footer>
       <p>
         Tin Whistle Tab Creator originally by <a href="http://andyf.me/">Andy Farrell</a>; modified by <a href="https://troido.nl">troido</a>.
@@ -104,6 +93,7 @@
     <script src="whistletab/tabview.js"></script>
     <script src="whistletab/staff.js"></script>
     <script src="whistletab/controller.js"></script>
+    <script src="whistletab/storage.js"></script>
     <script src="whistletab/main.js"></script>
   </body>
 </html>

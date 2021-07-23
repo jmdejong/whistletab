@@ -1,34 +1,20 @@
 "use strict";
-/*eslint indent: ["warn", 4] */
-(function () {
+
+
+    
+
+window.addEventListener("load", () => {
 
     
     let tabview = new TabView();
     tabview.init();
-    let controller = new Controller(tabview);
-    controller.init();
+    let storage = new TabStorage();
+    let controller = new Controller(tabview, storage);
     
     let tab = Tab.fromQueryParameters(document.location.search);
     if (tab){
         controller.setTab(tab);
     }
-
-    let options = document.querySelector('#display-options');
-    for (let option of options.getElementsByTagName("input")){
-        let update = () => document.body.classList.toggle(option.id, option.checked);
-        if (option.id === 'show-staff-notes') {
-            update = () => {
-                tabview.showNotes = option.checked;
-                controller.update();
-            }
-        }
-        option.addEventListener("input", update);
-        update()
-    }
     
-    document.getElementById("copy-share-url").addEventListener("click", e => {
-        document.getElementById("share-url").select();
-        document.execCommand("copy");
-    });
-    
-}());
+    storage.showStoredTabs();
+});

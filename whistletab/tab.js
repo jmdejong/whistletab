@@ -2,10 +2,16 @@
 class Tab {
     
     static fromQueryParameters(queryparams){
+        if (queryparams.length < 3 || queryparams[0] !== "?"){
+            return null;
+        }
         let paramPairs = queryparams
             .substring(1)
             .split("&")
             .map(s => s.split("="));
+        if (paramPairs.length === 0){
+            return null;
+        }
         let parameters = [];
         for (let keyVal of paramPairs){
             if (keyVal.length != 2){
@@ -13,6 +19,7 @@ class Tab {
             }
             parameters[keyVal[0]] = keyVal[1];
         }
+        
         if (!parameters.s){
             return null;
         }

@@ -4,20 +4,13 @@ const APP_TITLE = 'Tin Whistle Tab Creator';
 
 class Controller {
     
-    constructor(output){
+    constructor(output, storage){
         this.output = output;
+        this.storage = storage
         this.elements = {};
         this.updaters = []
-    }
-    
-    _listen(id, onChange){
-        let el = document.getElementById(id);
-        el.addEventListener("input", e => onChange(el));
-        this.elements[id] = el;
-        this.updaters.push(() => onChange(el));
-    }
-    
-    init(){
+        
+        
         this._listen("notes", el => {
             this.output.setNotes(el.value);
             this.output.setShareUrl(this.getTab());
@@ -28,14 +21,50 @@ class Controller {
         });
         this._listen("tab-name", el => {
             this.output.setName(el.value);
+            document.getElementById("overwrite-warning").hidden = !this.storage.tabExists(el.value);
             this.output.setShareUrl(this.getTab());
         });
         this._listen("tab-source", el => {
             this.output.setSourceHeading(el.value);
             this.output.setShareUrl(this.getTab());
         });
-        this.update()
+        
+        
+        let options = document.querySelector('#display-options');
+        for (let option of options.getElementsByTagName("input")){
+            let update = () => document.body.classList.toggle(option.id, option.checked);
+            if (option.id === 'show-staff-notes') {
+                update = () => {
+                    this.output.showNotes = option.checked;
+                    this.update();
+                }
+            }
+            option.addEventListener("input", update);
+            update()
+        }
+        
+        document.getElementById("copy-share-url").addEventListener("click", e => {
+            document.getElementById("share-url").select();
+            document.execCommand("copy");
+        });
+        
+        document.getElementById("saved-tabs-legend").addEventListener("click", e => {
+            document.getElementById("saved-tabs-content").classList.toggle('collapsed');
+        })
+        
+        document.getElementById("save-tab").addEventListener("click", e => {
+            this.storage.storeTab(this.getTab());
+            this.storage.showStoredTabs();
+        });
     }
+    
+    _listen(id, onChange){
+        let el = document.getElementById(id);
+        el.addEventListener("input", e => onChange(el));
+        this.elements[id] = el;
+        this.updaters.push(() => onChange(el));
+    }
+    
     
     _toggleClass(el){
         document.body.classList.toggle(el.id, el.checked);
