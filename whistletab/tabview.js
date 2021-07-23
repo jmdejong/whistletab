@@ -1,3 +1,51 @@
+
+
+const LETTER_CODES = {
+    a: 0,
+    b: 2,
+    c: 3,
+    d: 5,
+    e: 7,
+    f: 8,
+    g: 10
+};
+
+class Note {
+    
+    static noteParser = /^([a-gA-G])([#_]?)(\+*)$/;
+    
+    static SHARP = "#";
+    static FLAT = "_";
+    
+    static fromString(name){
+        let match = name.match(this.noteParser);
+        if (!match || match.length !== 4){
+            return null;
+        }
+        let [_, letter, suffix, higher] = match;
+        let octave = higher.length;
+        if (letter.match(/[A-G]/)) {
+            ++octave;
+            letter = letter.toLowerCase();
+        }
+        return new Note(letter, octave, suffix);
+    }
+    
+    constructor(letter, octave, suffix){
+        this.letter = letter;
+        this.octave = octave;
+        this.suffix = suffix;
+    }
+    
+    getCode(base){
+        return (LETTER_CODES[this.letter] + 12 - base) % 12
+            + 12 * this.octave 
+            + (this.suffix == Note.SHARP) 
+            - (this.suffix == Note.FLAT);
+    }
+}
+
+
 class TabView {
     
     spacerTemplate = '<span class="spacer"></span>'
@@ -8,63 +56,48 @@ class TabView {
     spacing = 1
     // These are the spacings as defined in ems in the CSS
     spacings = [0, 0.1, 0.2, 0.3, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
+    
 
-    fingerings = {
-        'd':   '------',
-        'd#':  '-----h',
-        'e':   '-----o',
-        'f':   '----ho',
-        'f#':  '----oo',
-        'g':   '---ooo',
-        'g#':  '--Hooo',
-        'a':   '--oooo',
-        'a#':  '-Hoooo',
-        'b':   '-ooooo',
-        'c':   'o--ooo',
-        'c#':  'oooooo',
+    fingerings = [
+        '------',
+        '-----h',
+        '-----o',
+        '----ho',
+        '----oo',
+        '---ooo',
+        '--Hooo',
+        '--oooo',
+        '-Hoooo',
+        '-ooooo',
+        'o--ooo',
+        'oooooo',
 
-        'D':  'o-----',
-        'D#': '-----h',
-        'E':  '-----o',
-        'F':  '----ho',
-        'F#': '----oo',
-        'G':  '---ooo',
-        'G#': '--o--o',
-        'A':  '--oooo',
-        'A#': '-o-ooo',
-        'B':  '-ooooo',
-        'C':  'o-o---',
-        'C#': 'ooo---',
+        'o-----',
+        '-----h',
+        '-----o',
+        '----ho',
+        '----oo',
+        '---ooo',
+        '--o--o',
+        '--oooo',
+        '-o-ooo',
+        '-ooooo',
+        'o-o---',
+        'ooo---',
 
-        'd+':  'o-----',
-        'd#+': '-----h',
-        'e+':  '-----o',
-        'f+':  '----ho',
-        'f#+': '----oo',
-        'g+':  '---ooo',
-        'g#+': '--o--o',
-        'a+':  '--oooo',
-        'a#+': '-o-ooo',
-        'b+':  '-ooooo',
-        'c+':  'o-o---',
-        'c#+': 'ooo---',
-
-        'd++':  'o-----',
-        'e++':  '-----o',
-        'f#++': '----oo',
-        'g++':  '---ooo',
-        'a++':  'o----o',
-        'b++':  '-ooooo',
-        'c#++': 'oooooo',
-
-        'D+':  'o-----',
-        'E+':  '-----o',
-        'F#+': '----oo',
-        'G+':  '---ooo',
-        'A+':  'o----o',
-        'B+':  '-ooooo',
-        'C#+': 'oooooo'
-    }
+        'o-----',
+        null,
+        '-----o',
+        null,
+        '----oo',
+        '---ooo',
+        null,
+        'o----o',
+        null,
+        '-ooooo',
+        null,
+        'oooooo'
+    ]
     symbolMap = {
         'o': '\u25cb', // white circle
         '-': '\u25cf', // black circle
@@ -160,6 +193,24 @@ class TabView {
         this.staves.push(newStaff);
         return newStaff.toHtml();
     }
+    
+    calculateNoteCode(noteName){
+        
+    }
+    
+    getFingering(noteName){
+        
+        let note = Note.fromString(noteName);
+        if (note === null){
+            return null;
+        }
+        let code = note.getCode(LETTER_CODES.d);
+        if (code >= this.fingerings.length){
+            return null;
+        }
+        return this.fingerings[code]
+    }
+    
     tabFromNote(note, staffNotes, prevWasNote) {
         // staffNotes is a list of notes that this function modifies. Each
         // note, space and slur is added to it, and when a line break is reached,
@@ -201,10 +252,11 @@ class TabView {
         if (/^-/.test(note)) {
             return this.commentFromNote(note);
         }
-
-        if (this.fingerings[note]) {
+        
+        let fingering = this.getFingering(note);
+        if (fingering !== null) {
             staffNotes.push(note);
-            fingers = this.fingerings[note].split('');
+            fingers = fingering.split('');
         } else {
             return this.errorTemplate;
         }
@@ -238,7 +290,7 @@ class TabView {
 
         tabs = notes.map(function (note) {
             var mapped = this.tabFromNote(note, staffNotes, prevWasNote);
-            prevWasNote = !!this.fingerings[note];
+            prevWasNote = !!this.getFingering(note);
             return mapped;
         }, this);
         
