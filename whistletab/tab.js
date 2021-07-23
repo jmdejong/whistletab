@@ -43,6 +43,6 @@ class Tab {
         let name = Encoder.encode(this.name) || "";
         let spacing = this.spacing || 0;
         let sourceUrl = Encoder.encode(this.sourceUrl) || "";
-        return `?s=${tab}&n=${name}&p=${spacing}&c=${sourceUrl}`
+        return `?s=${tab}&n=${name}&p=${spacing}&c=${sourceUrl}&v=a0`
     }
 }

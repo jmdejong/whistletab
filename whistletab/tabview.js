@@ -254,8 +254,8 @@ class TabView {
         }
         
         let fingering = this.getFingering(note);
+        staffNotes.push(note);
         if (fingering !== null) {
-            staffNotes.push(note);
             fingers = fingering.split('');
         } else {
             return this.errorTemplate;
