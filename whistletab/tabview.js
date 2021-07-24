@@ -269,7 +269,6 @@ class TabView {
     }
 
     setNotes(inputString) {
-        var self = this;
         var lines = inputString.split('\n');
         var notes;
         var staffNotes = [];
@@ -283,16 +282,16 @@ class TabView {
             return;
         }
 
-        notes = lines.reduce(function (n, line) {
+        notes = lines.reduce((n, line) => {
             if (line === '') return n.concat('\n');
-            return n.concat(line.match(self.noteMatcher), '\n');
+            return n.concat(line.match(this.noteMatcher), '\n');
         }, []);
 
-        tabs = notes.map(function (note) {
+        tabs = notes.map((note) => {
             var mapped = this.tabFromNote(note, staffNotes, prevWasNote);
             prevWasNote = !!this.getFingering(note);
             return mapped;
-        }, this);
+        });
         
         this.el.innerHTML = tabs.join('');
         if (tabs.length !== 0){
