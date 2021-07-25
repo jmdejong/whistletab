@@ -13,20 +13,20 @@ class Controller {
         
         this._listen("notes", el => {
             this.output.setNotes(el.value);
-            this.output.setShareUrl(this.getTab());
         });
         this._listen("spacing", el => {
             this.output.setSpacing(el.value);
-            this.output.setShareUrl(this.getTab());
         });
         this._listen("tab-name", el => {
             this.output.setName(el.value);
             document.getElementById("overwrite-warning").hidden = !this.storage.tabExists(el.value);
-            this.output.setShareUrl(this.getTab());
         });
         this._listen("tab-source", el => {
             this.output.setSourceHeading(el.value);
-            this.output.setShareUrl(this.getTab());
+        });
+        this._listen("whistle-key", el => {
+        });
+        this._listen("octave-base", el => {
         });
         
         
@@ -60,9 +60,15 @@ class Controller {
     
     _listen(id, onChange){
         let el = document.getElementById(id);
-        el.addEventListener("input", e => onChange(el));
+        el.addEventListener("input", e => {
+            onChange(el);
+            this.output.setShareUrl(this.getTab());
+        });
         this.elements[id] = el;
-        this.updaters.push(() => onChange(el));
+        this.updaters.push(() => {
+            onChange(el);
+            this.output.setShareUrl(this.getTab());
+        });
     }
     
     
@@ -79,6 +85,8 @@ class Controller {
         this.get("spacing").value = tab.spacing;
         this.get("tab-name").value = tab.name;
         this.get("tab-source").value = tab.sourceUrl;
+        this.get("whistle-key").value = tab.key;
+        this.get("octave-base").value = tab.base;
         this.update()
     }
     
@@ -87,7 +95,9 @@ class Controller {
             tab: this.get("notes").value,
             name: this.get("tab-name").value,
             spacing: this.get("spacing").value,
-            sourceUrl: this.get("tab-source").value
+            sourceUrl: this.get("tab-source").value,
+            key: this.get("whistle-key").value,
+            base: this.get("octave-base").value
         });
     }
     
