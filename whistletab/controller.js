@@ -11,9 +11,7 @@ class Controller {
         this.updaters = []
         
         
-        this._listen("notes", el => {
-            this.output.setNotes(el.value);
-        });
+        this._listen("notes", el => this.updateTab());
         this._listen("spacing", el => {
             this.output.setSpacing(el.value);
         });
@@ -24,10 +22,8 @@ class Controller {
         this._listen("tab-source", el => {
             this.output.setSourceHeading(el.value);
         });
-        this._listen("whistle-key", el => {
-        });
-        this._listen("octave-base", el => {
-        });
+        this._listen("whistle-key", el => this.updateTab());
+        this._listen("octave-base", el => this.updateTab());
         
         
         let options = document.querySelector('#display-options');
@@ -74,6 +70,14 @@ class Controller {
     
     _toggleClass(el){
         document.body.classList.toggle(el.id, el.checked);
+    }
+    
+    updateTab(){
+        this.output.setNotes(
+            this.get("notes").value,
+            this.get("whistle-key").value,
+            this.get("octave-base").value
+        );
     }
     
     get(id){
