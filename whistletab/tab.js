@@ -39,7 +39,7 @@ class Tab {
         this.spacing = options.spacing || 0;
         this.sourceUrl = options.sourceUrl || "";
         this.key = options.key || "d";
-        this.base = options.base || "d";
+        this.base = options.base || "s";
     }
     
     toQueryParameters(){

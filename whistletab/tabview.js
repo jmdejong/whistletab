@@ -38,12 +38,15 @@ class Note {
     }
     
     getCode(base){
-        return (LETTER_CODES[this.letter] + 12 - (base || 0)) % 12
+        base = base || 0;
+        return (LETTER_CODES[this.letter] + 12 - base) % 12 + base
             + 12 * this.octave 
             + (this.suffix == Note.SHARP) 
             - (this.suffix == Note.FLAT);
     }
 }
+
+const SAME = "s";
 
 
 class TabView {
@@ -198,20 +201,20 @@ class TabView {
         
     }
     
-    getFingering(noteName, baseCode){
+    getFingering(noteName, baseCode, keyCode){
         
         let note = Note.fromString(noteName);
         if (note === null){
             return null;
         }
-        let code = note.getCode(baseCode);
+        let code = note.getCode(baseCode) - keyCode;
         if (code >= this.fingerings.length){
             return null;
         }
         return this.fingerings[code]
     }
     
-    tabFromNote(note, staffNotes, prevWasNote, baseCode) {
+    tabFromNote(note, staffNotes, prevWasNote, baseCode, keyCode) {
         // staffNotes is a list of notes that this function modifies. Each
         // note, space and slur is added to it, and when a line break is reached,
         // a staff is added and the list is reset.
@@ -253,7 +256,7 @@ class TabView {
             return this.commentFromNote(note);
         }
         
-        let fingering = this.getFingering(note, baseCode);
+        let fingering = this.getFingering(note, baseCode, keyCode);
         staffNotes.push(note);
         if (fingering !== null) {
             fingers = fingering.split('');
@@ -275,7 +278,8 @@ class TabView {
         var tabs;
         var prevWasNote = false;
         
-        let baseCode = Note.fromString(base).getCode(0);
+        let keyCode = Note.fromString(key).getCode(0);
+        let baseCode = base === SAME ? keyCode : Note.fromString(base).getCode(0);
 
         this.staves = [];
 
@@ -291,8 +295,8 @@ class TabView {
         
 
         tabs = notes.map((note) => {
-            var mapped = this.tabFromNote(note, staffNotes, prevWasNote, baseCode);
-            prevWasNote = !!this.getFingering(note, baseCode);
+            var mapped = this.tabFromNote(note, staffNotes, prevWasNote, baseCode, keyCode);
+            prevWasNote = !!this.getFingering(note, baseCode, keyCode);
             return mapped;
         });
         
