@@ -97,14 +97,18 @@
       <label class="break-float"><input type="checkbox" id="show-staff-notes"> Show staff notes</label>
     </fieldset>
 
-    <template id="tab-entry"><ul class="tab-note">
+    <template id="tab-entry">
+      <ul class="tab-note">
         <li class="finger">$0</li>
         <li class="finger">$1</li>
         <li class="finger">$2</li>
         <li class="finger">$3</li>
         <li class="finger">$4</li>
         <li class="finger">$5</li>
-        <li class="tab-note-text">$N</li>
+        <li class="tab-note-text">
+          <span class="tab-note--letter"></span>
+          <sup class="note-octave"></sup>
+        </li>
       </ul></template>
 
     <template id="tab-entry-error">
@@ -115,8 +119,20 @@
         <li>?</li>
         <li>?</li>
         <li>?</li>
-        <li class="tab-note">?</li>
+        <li class="tab-note-text">?</li>
       </ul>
+    </template>
+    
+    <template id="tab-entry-spacer">
+      <span class="spacer"></span>
+    </template>
+    
+    <template id="tab-entry-slur">
+      <span class="slur">(</span>
+    </template>
+    
+    <template id="line-break-template">
+    <div class="line-break"></div>
     </template>
 
     <footer>

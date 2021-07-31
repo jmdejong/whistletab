@@ -1,4 +1,7 @@
+"use strict";
 
+
+class TextError extends Error { }
 
 const LETTER_CODES = {
     a: 0,
@@ -10,12 +13,30 @@ const LETTER_CODES = {
     g: 10
 };
 
-class Note {
+
+const SHARP = "#";
+const FLAT = "_";
+const SPACE = " ";
+const SLUR = "-";
+
+const SYMBOL_MAP = {
+    'o': '\u25cb', // white circle
+    '-': '\u25cf', // black circle
+    'H': '\u25d0', // circle with left half black
+    'h': '\u25d1'  // circle with right half black
+}
+
+// const ERROR_TEMPLATE = '<ul class="tab-note error"><li>?</li><li>?</li><li>?</li><li>?</li><li>?</li><li>?</li><li class="tab-note">?</li></ul>';
+// const SPACER_TEMPLATE = '<span class="spacer"></span>'
+// const SLUR_TEMPLATE = '<span class="slur">(</span>'
+
+
+let NOTES = "a a# b c c# d d# e f f# g g#".split(' ');
+
+class WrittenNote {
     
-    static noteParser = /^([a-gA-G])([#_]?)(\+*)$/;
+    static noteParser = /^([a-gA-G])(#*|_*)(\+*)$/;
     
-    static SHARP = "#";
-    static FLAT = "_";
     
     static fromString(name){
         let match = name.match(this.noteParser);
@@ -28,7 +49,7 @@ class Note {
             ++octave;
             letter = letter.toLowerCase();
         }
-        return new Note(letter, octave, suffix);
+        return new WrittenNote(letter, octave, suffix);
     }
     
     constructor(letter, octave, suffix){
@@ -41,10 +62,269 @@ class Note {
         base = base || 0;
         return (LETTER_CODES[this.letter] + 12 - base) % 12 + base
             + 12 * this.octave 
-            + (this.suffix == Note.SHARP) 
-            - (this.suffix == Note.FLAT);
+            + (this.suffix === SHARP) 
+            - (this.suffix === FLAT);
+    }
+    
+    makeAbsolute(baseCode){
+        return new Token.AbsoluteNote(
+            this.getCode(baseCode), 
+            (this.suffix === SHARP) - (this.suffix === FLAT)
+        );
     }
 }
+
+class Token {
+
+    static AbsoluteNote = class AbsoluteNote{
+        
+        constructor(code, shift){
+            this.code = code;
+            this.shift = shift || 0; // whether the key is sharp of flat. This won't change the actual height, only whether it's displayed as eg C# or Db
+        }
+        
+        makeRelative(keyCode){
+            return new RelativeNote(this.code - keyCode);
+        }
+        
+        getOctave(baseCode){
+            return ((this.code - baseCode) / 12) | 0;
+        }
+        
+        getTab(keyCode){
+            
+            let tabMissing = false;
+            let relative = this.makeRelative(keyCode)
+            let fingering = relative
+                .getFingering();
+            let tab = document.getElementById("tab-entry").content.cloneNode(true);
+//             console.log(tab);
+            let symbols;
+            if (fingering === null) {
+                tab.querySelector("ul").classList.add("error");
+                symbols = "??????".split('');
+            } else {
+                symbols = fingering
+                    .split('')
+                    .map(finger => SYMBOL_MAP[finger]);
+            }
+
+            let items = tab.querySelectorAll("li")
+            symbols.forEach((symbol, index) => {
+                items[index].textContent = symbol;
+            });
+            let name = NOTES[this.code % 12].replace("#", '<span class="sharp">\u266f</span>');
+            if (relative.getOctave() >= 1){
+                name = name.toUpperCase();
+            }
+            tab.querySelector(".tab-note--letter").innerHTML = name;
+            tab.querySelector(".note-octave").textContent = "+".repeat(relative.getOctave());
+            
+            return tab
+        }
+        
+    }
+    
+    static Rest = class Rest{
+        getTab(keyCode){
+            return document.getElementById("tab-entry-spacer").content.cloneNode(true);
+        }
+    }
+    
+    static Slur = class Slur{
+        getTab(keyCode){
+            return document.getElementById("tab-entry-slur").content.cloneNode(true);
+        }
+    }
+}
+
+class RelativeNote {
+    
+    constructor(code){
+        this.code = code;
+    }
+    
+    getOctave(){
+        return this.code / 12 | 0;
+    }
+    
+    
+    getFingering(){
+        return this.fingerings[this.code];
+    }
+    
+    fingerings = [
+        '------',
+        '-----h',
+        '-----o',
+        '----ho',
+        '----oo',
+        '---ooo',
+        '--Hooo',
+        '--oooo',
+        '-Hoooo',
+        '-ooooo',
+        'o--ooo',
+        'oooooo',
+
+        'o-----',
+        '-----h',
+        '-----o',
+        '----ho',
+        '----oo',
+        '---ooo',
+        '--o--o',
+        '--oooo',
+        '-o-ooo',
+        '-ooooo',
+        'o-o---',
+        'ooo---',
+
+        'o-----',
+        null,
+        '-----o',
+        null,
+        '----oo',
+        '---ooo',
+        null,
+        'o----o',
+        null,
+        '-ooooo',
+        null,
+        'oooooo'
+    ];
+}
+        
+
+class WTText {
+    
+    constructor(text, base){
+        this.text = text;
+        this.base = base;
+    }
+    
+    toLines(){
+        if (this.text === null || this.text === undefined){
+            return [];
+        }
+        return this.text
+            .split('\n')
+            .map(l => this.textLineToLine(l.trim()));
+    }
+    
+    textLineToLine(text){
+        if (text === ""){
+            return new Line.Empty();
+        } else {
+            let parts = text.match(/^(?<prefix>-*)(?<body>[^-].*)$/).groups
+            let prefix = parts.prefix;
+            let body = parts.body;
+            if (prefix.length > 3){
+                return new Line.Empty();
+            } else if (prefix.length === 3){
+                return new Line.Comment(body, true);
+            } else if (prefix.length === 2){
+                return new Line.Lyrics(body.split(' '));
+            } else if (prefix.length === 1){
+                return new Line.Comment(body);
+            } else if (prefix.length === 0){
+                return this.toNoteLine(body);
+            } else {
+                throw new TextError(`no match found for line prefix: ${prefix}, ${body}; line: ${text}`);
+            }
+        }
+    }
+    
+    toNoteLine(line){
+        let text = line;
+        let tokens = [];
+        while (text !== ""){
+            let r = text.match(/^(\s+)|(-)|([a-gA-G])(#*|_*)(\+*)/);
+            if (r === null){
+                throw new TextError(`invalid line: ${text}`);
+            }
+            let [match, space, slur, noteName, suffix, octave] = r;
+            if (space !== undefined){
+                tokens.push(new Token.Rest())
+            } else if (slur !== undefined){
+                tokens.push(new Token.Slur());
+            } else if (noteName != undefined){
+                tokens.push(WrittenNote.fromString(match).makeAbsolute(this.base));
+            }
+            text = text.substring(match.length);
+        }
+        return new Line.Notes(tokens);
+    }
+}
+
+
+class Line {
+    
+    static Empty = class Empty {
+        render(){
+            return [];
+        }
+    }
+    
+    static Comment = class Comment {
+        
+        constructor(text, isHeading){
+            this.text = text;
+            this.isHeading = isHeading || false;
+        }
+        
+        render() {
+            let para = document.createElement('p');
+            para.appendChild(document.createTextNode(this.text));
+            para.className = this.isHeading ? 'comment heading' : 'comment text';
+            return [para];
+        }
+    }
+    
+    static Lyrics = class Lyrics{
+        
+        constructor(words){
+            this.words = words
+        }
+        
+        render(){
+            let para = document.createElement('p');
+            this.words.forEach(word => {
+                let spacingWrapper = document.createElement('span');
+                let wordEl = document.createElement('span');
+                wordEl.appendChild(document.createTextNode(word));
+                wordEl.className = 'word';
+                spacingWrapper.className = 'spacer';
+                spacingWrapper.appendChild(wordEl);
+                para.appendChild(spacingWrapper);
+            });
+            para.className = 'comment lyric';
+            return [para];
+        }
+    }
+    
+    static Notes = class Notes {
+        
+        constructor(notes) {
+            this.notes = notes;
+        }
+        
+        render(key){
+//             return this.notes.map(note => note.getTab(key));
+            let el = document.createElement("div");
+            for (let note of this.notes){
+                el.appendChild(note.getTab(key));
+            }
+            return [el];
+        }
+    }
+}
+//             if (text.startsWith("---")){
+//                 return new Line.Heading(text);
+//             } else if (text.startsWith("--")){
+//                 if (!line.match(/^(\s+|-|[a-g](?:#*|_*)\+*)+$/i){
+//                     throw new Exception("invalid line: " + line
+//                 return new Line.Lyrics(text.split(" "))
 
 const SAME = "s";
 
@@ -55,6 +335,9 @@ class TabView {
     slurTemplate = '<span class="slur">(</span>'
 
     noteMatcher = /^-{1,3}.*$|-|[a-g]#?\+{0,2}|\n| /gi
+    
+    noteLineValidator = /^(\s+|-|[a-g](?:#*|_*)\+*)+$/i
+    noteTokenizer = /(?<space>\s+)|(?<slur>-)|(?<notename>[a-gA-G])(?<suffix>#*|_*)(?<octave>\+*)/g
 
     spacing = 1
     // These are the spacings as defined in ems in the CSS
@@ -197,13 +480,9 @@ class TabView {
         return newStaff.toHtml();
     }
     
-    calculateNoteCode(noteName){
-        
-    }
-    
     getFingering(noteName, baseCode, keyCode){
         
-        let note = Note.fromString(noteName);
+        let note = WrittenNote.fromString(noteName);
         if (note === null){
             return null;
         }
@@ -214,20 +493,16 @@ class TabView {
         return this.fingerings[code]
     }
     
-    tabFromNote(note, staffNotes, prevWasNote, baseCode, keyCode) {
+    tabFromNote(note, staffNotes, baseCode, keyCode) {
         // staffNotes is a list of notes that this function modifies. Each
         // note, space and slur is added to it, and when a line break is reached,
         // a staff is added and the list is reset.
         var fingers;
 
-        if (note === '\n' && prevWasNote) {
+        if (note === '\n') {
             var staff = this.staffFromNotes(staffNotes);
             staffNotes.length = 0;
             return staff + '<div class="line-break"></div>';
-        }
-
-        if (note === '\n') {
-            return '<div class="line-break"></div>';
         }
 
         if (note === '') {
@@ -264,46 +539,89 @@ class TabView {
             return this.errorTemplate;
         }
 
-        return fingers.reduce(function (html, finger, index) {
-            var placeholder = '$' + index.toString();
-            return html.replace(placeholder, this.symbolMap[finger]);
-        }.bind(this), this.tabTemplate.concat()).
-            replace('$N', this.noteTemplate(note));
+        return fingers
+            .reduce(
+                (html, finger, index) => {
+                    var placeholder = '$' + index.toString();
+                    return html.replace(placeholder, this.symbolMap[finger]);
+                },
+                this.tabTemplate.concat()
+            )
+            .replace('$N', this.noteTemplate(note));
     }
 
     setNotes(inputString, key, base) {
-        var lines = inputString.split('\n');
-        var notes;
-        var staffNotes = [];
-        var tabs;
-        var prevWasNote = false;
         
-        let keyCode = Note.fromString(key).getCode(0);
+        let keyCode = WrittenNote.fromString(key).getCode(0);
         let baseCode = base === SAME ? keyCode : Note.fromString(base).getCode(0);
+        
+//         var lines = inputString.split('\n');
 
         this.staves = [];
 
-        if (lines.length === 0) {
-            this.el.innerHTML = '';
-            return;
-        }
-
-        notes = lines.reduce((n, line) => {
-            if (line === '') return n.concat('\n');
-            return n.concat(line.match(this.noteMatcher), '\n');
-        }, []);
+        this.el.innerHTML = '';
+//         if (lines.length === 0) {
+//             return;
+//         }
         
-
-        tabs = notes.map((note) => {
-            var mapped = this.tabFromNote(note, staffNotes, prevWasNote, baseCode, keyCode);
-            prevWasNote = !!this.getFingering(note, baseCode, keyCode);
-            return mapped;
-        });
+        let wt = new WTText(inputString, baseCode);
+//         let lines = wt.toLines();
+        wt.toLines(baseCode)
+            .reduce(((acc, line) => acc.concat(line.render(keyCode))), [])
+            .forEach((line, index) => {
+                if (index != 0){
+                    this.el.appendChild(document.getElementById("line-break-template").content.cloneNode(true));
+                }
+                this.el.appendChild(line);
+            });
+//         wt.toLines(baseCode).forEach(line =>
+//             line.render(keyCode)
+//             for (let el of line.render(keyCode)){
+//                 this.el.appendChild(el);
+//             }
+//         }
+//         console.log(wt.toLines());
         
-        this.el.innerHTML = tabs.join('');
-        if (tabs.length !== 0){
-            this.measure1Em();
-        }
+//         let output = [];
+//         for (let line of lines){
+//             line = line.trim();
+//             if (line.length === 0){
+//                 continue;
+//             } else if (line[0] === '-'){
+//                 // parse text line
+//             } else {
+//                 if (!this.noteLineValidator.test(line)){
+//                     // error
+//                 }
+// //                 while (line !== ""){
+//                 
+//                 let tokens = []
+//                 for (let part of line.matchAll(this.noteTokenizer)){
+//                     
+//                 }
+// //                 console.log(tokens);
+//             }
+//         }
+
+//         let notes = lines.reduce((n, line) => {
+//             if (line === ''){
+//                 return n.concat('\n');
+//             } else {
+//                 return n.concat(line.match(this.noteMatcher), '\n');
+//             }
+//         }, []);
+//         
+// 
+//         var staffNotes = [];
+//         let tabs = notes.map((note) => {
+//             var mapped = this.tabFromNote(note, staffNotes, baseCode, keyCode);
+//             return mapped;
+//         });
+//         
+//         this.el.innerHTML = tabs.join('');
+//         if (tabs.length !== 0){
+//             this.measure1Em();
+//         }
     }
     
     setShareUrl(tab){
