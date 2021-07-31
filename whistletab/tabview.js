@@ -26,10 +26,6 @@ const SYMBOL_MAP = {
     'h': '\u25d1'  // circle with right half black
 }
 
-// const ERROR_TEMPLATE = '<ul class="tab-note error"><li>?</li><li>?</li><li>?</li><li>?</li><li>?</li><li>?</li><li class="tab-note">?</li></ul>';
-// const SPACER_TEMPLATE = '<span class="spacer"></span>'
-// const SLUR_TEMPLATE = '<span class="slur">(</span>'
-
 
 let NOTES = "a a# b c c# d d# e f f# g g#".split(' ');
 
@@ -98,7 +94,6 @@ class Token {
             let fingering = relative
                 .getFingering();
             let tab = document.getElementById("tab-entry").content.cloneNode(true);
-//             console.log(tab);
             let symbols;
             if (fingering === null) {
                 tab.querySelector("ul").classList.add("error");
@@ -311,7 +306,6 @@ class Line {
         }
         
         render(key){
-//             return this.notes.map(note => note.getTab(key));
             let el = document.createElement("div");
             for (let note of this.notes){
                 el.appendChild(note.getTab(key));
@@ -320,12 +314,6 @@ class Line {
         }
     }
 }
-//             if (text.startsWith("---")){
-//                 return new Line.Heading(text);
-//             } else if (text.startsWith("--")){
-//                 if (!line.match(/^(\s+|-|[a-g](?:#*|_*)\+*)+$/i){
-//                     throw new Exception("invalid line: " + line
-//                 return new Line.Lyrics(text.split(" "))
 
 const SAME = "s";
 
@@ -555,18 +543,12 @@ class TabView {
         
         let keyCode = WrittenNote.fromString(key).getCode(0);
         let baseCode = base === SAME ? keyCode : Note.fromString(base).getCode(0);
-        
-//         var lines = inputString.split('\n');
 
         this.staves = [];
 
         this.el.innerHTML = '';
-//         if (lines.length === 0) {
-//             return;
-//         }
         
         let wt = new WTText(inputString, baseCode);
-//         let lines = wt.toLines();
         wt.toLines(baseCode)
             .reduce(((acc, line) => acc.concat(line.render(keyCode))), [])
             .forEach((line, index) => {
@@ -575,54 +557,6 @@ class TabView {
                 }
                 this.el.appendChild(line);
             });
-//         wt.toLines(baseCode).forEach(line =>
-//             line.render(keyCode)
-//             for (let el of line.render(keyCode)){
-//                 this.el.appendChild(el);
-//             }
-//         }
-//         console.log(wt.toLines());
-        
-//         let output = [];
-//         for (let line of lines){
-//             line = line.trim();
-//             if (line.length === 0){
-//                 continue;
-//             } else if (line[0] === '-'){
-//                 // parse text line
-//             } else {
-//                 if (!this.noteLineValidator.test(line)){
-//                     // error
-//                 }
-// //                 while (line !== ""){
-//                 
-//                 let tokens = []
-//                 for (let part of line.matchAll(this.noteTokenizer)){
-//                     
-//                 }
-// //                 console.log(tokens);
-//             }
-//         }
-
-//         let notes = lines.reduce((n, line) => {
-//             if (line === ''){
-//                 return n.concat('\n');
-//             } else {
-//                 return n.concat(line.match(this.noteMatcher), '\n');
-//             }
-//         }, []);
-//         
-// 
-//         var staffNotes = [];
-//         let tabs = notes.map((note) => {
-//             var mapped = this.tabFromNote(note, staffNotes, baseCode, keyCode);
-//             return mapped;
-//         });
-//         
-//         this.el.innerHTML = tabs.join('');
-//         if (tabs.length !== 0){
-//             this.measure1Em();
-//         }
     }
     
     setShareUrl(tab){
