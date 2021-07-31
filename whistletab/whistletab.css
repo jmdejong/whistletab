@@ -321,11 +321,13 @@ input[type="url"] {
 
                 .tab-note li.tab-note-text { height: 0; }
 .show-notes     .tab-note li.tab-note-text { height: auto; }
+.show-octaves   .tab-note li.tab-note-text { height: auto; }
 
                 .tab-note--letter { display: none; }
-                .tab-note--letter + sup { display: none; }
 .show-notes     .tab-note--letter { display: inline; }
-.show-notes     .tab-note--letter + sup { display: inline; }
+
+                .note-octave { display: none; }
+.show-octaves   .note-octave { display: inline; }
 
                 .slur, .finger { display: none; }
 .show-fingering .finger, .show-fingering .slur { display: block; }
