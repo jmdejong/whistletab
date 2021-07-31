@@ -113,10 +113,11 @@ class Token {
             symbols.forEach((symbol, index) => {
                 items[index].textContent = symbol;
             });
-            let name = NOTES[this.code % 12].replace("#", '<span class="sharp">\u266f</span>');
+            let name = NOTES[this.code % 12];
             if (relative.getOctave() >= 1){
                 name = name.toUpperCase();
             }
+            name = name.replace("#", '<span class="sharp">\u266f</span>');
             tab.querySelector(".tab-note--letter").innerHTML = name;
             tab.querySelector(".note-octave").textContent = "+".repeat(relative.getOctave());
             
