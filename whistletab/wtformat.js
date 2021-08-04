@@ -87,17 +87,19 @@ class WTText {
         let text = line;
         let tokens = [];
         while (text !== ""){
-            let r = text.match(/^(\s+)|(-)|([a-gA-G])(#+|_+)?(\+*)/);
+            let r = text.match(/^(?:(\s+)|(-)|([a-gA-G])(#+|_+)?(\+*)|(\|))/);
             if (r === null){
                 throw new TextError(`invalid line: ${text}`);
             }
-            let [match, space, slur, noteName, suffix, octave] = r;
+            let [match, space, slur, noteName, suffix, octave, bar] = r;
             if (space !== undefined){
                 tokens.push(new Token.Rest())
             } else if (slur !== undefined){
                 tokens.push(new Token.Slur());
             } else if (noteName != undefined){
                 tokens.push(WrittenNote.fromString(match).makeAbsolute(this.base));
+            } else if (bar !== undefined){
+                tokens.push(new Token.Bar())
             }
             text = text.substring(match.length);
         }

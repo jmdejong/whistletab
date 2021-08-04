@@ -101,6 +101,8 @@ class Renderer {
             return document.getElementById("tab-entry-spacer").content.cloneNode(true);
         } else if (part instanceof Token.Slur) {
             return document.getElementById("tab-entry-slur").content.cloneNode(true);
+        } else if (part instanceof Token.Bar) {
+            return document.getElementById("tab-entry-bar").content.cloneNode(true);
         }
     }
     

@@ -52,4 +52,6 @@ class Token {
     static Rest = class Rest{ }
     
     static Slur = class Slur{ }
+    
+    static Bar = class Bar{ }
 }
