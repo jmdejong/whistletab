@@ -1,5 +1,6 @@
 
 
+class TextError extends Error { }
 
 class WrittenNote {
     
@@ -23,7 +24,7 @@ class WrittenNote {
     constructor(letter, octave, suffix){
         this.letter = letter;
         this.octave = octave;
-        let [_, sharps, flats] = suffix.match("^(?:(#*)|(_*))$");
+        let [_, sharps, flats] = suffix.match("^(?:(#+)|(_+))?$");
         this.offset = (sharps || "").length - (flats || "").length;
     }
     
@@ -86,7 +87,7 @@ class WTText {
         let text = line;
         let tokens = [];
         while (text !== ""){
-            let r = text.match(/^(\s+)|(-)|([a-gA-G])(#*|_*)(\+*)/);
+            let r = text.match(/^(\s+)|(-)|([a-gA-G])(#+|_+)?(\+*)/);
             if (r === null){
                 throw new TextError(`invalid line: ${text}`);
             }

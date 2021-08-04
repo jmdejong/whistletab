@@ -1,7 +1,6 @@
 "use strict";
 
 
-class TextError extends Error { }
 
 const LETTER_CODES = {
     a: 0,
