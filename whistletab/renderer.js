@@ -64,11 +64,10 @@ class Renderer {
     renderNote(note){
         let tabMissing = false;
         let relative = note.makeRelative(this.key)
-        let fingering = relative
-            .getFingering();
+        let fingering = relative.getFingering();
         let tab = document.getElementById("tab-entry").content.cloneNode(true);
         let symbols;
-        if (fingering === null) {
+        if (fingering === null || fingering === undefined) {
             tab.querySelector("ul").classList.add("error");
             symbols = "??????".split('');
         } else {

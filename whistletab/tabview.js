@@ -116,92 +116,11 @@ class TabView {
         this.printTitle = document.querySelector('#print-title');
         this.tabSourceLink = document.querySelector('#tab-source-link');
     }
-    
-    measure1Em() {
-        const ul = this.el.querySelector('ul');
-        if (!ul){
-            return;
-        }
-        const rect = ul.getBoundingClientRect();
-
-        // Fingering elements have a width of 1.2em defined in the CSS.
-        this.emSize = rect.width / 1.2;
-
-        return this.emSize;
-    }
-
-    calculateNoteSpacing() {
-        return this.emSize * (this.spacings[this.spacing] + 1.2);
-    }
-
-    staffFromNotes(notes) {
-        const noteSpacing = this.calculateNoteSpacing();
-        const newStaff = new window.Staff(notes, this.showNotes, noteSpacing);
-        this.staves.push(newStaff);
-        return newStaff.toHtml();
-    }
-    
-    tabFromNote(note, staffNotes, baseCode, keyCode) {
-        // staffNotes is a list of notes that this function modifies. Each
-        // note, space and slur is added to it, and when a line break is reached,
-        // a staff is added and the list is reset.
-        var fingers;
-
-        if (note === '\n') {
-            var staff = this.staffFromNotes(staffNotes);
-            staffNotes.length = 0;
-            return staff + '<div class="line-break"></div>';
-        }
-
-        if (note === '') {
-            return '';
-        }
-
-        if (note === ' ') {
-            staffNotes.push(note);
-            return this.spacerTemplate;
-        }
-
-        if (note === '-') {
-            staffNotes.push(note);
-            return this.slurTemplate;
-        }
-
-        if (/^---/.test(note)) {
-            return this.commentFromNote(note, true);
-        }
-
-        if (/^--/.test(note)) {
-            return this.lyricsFromNote(note, false);
-        }
-
-        if (/^-/.test(note)) {
-            return this.commentFromNote(note);
-        }
-        
-        let fingering = this.getFingering(note, baseCode, keyCode);
-        staffNotes.push(note);
-        if (fingering !== null) {
-            fingers = fingering.split('');
-        } else {
-            return this.errorTemplate;
-        }
-
-        return fingers
-            .reduce(
-                (html, finger, index) => {
-                    var placeholder = '$' + index.toString();
-                    return html.replace(placeholder, this.symbolMap[finger]);
-                },
-                this.tabTemplate.concat()
-            )
-            .replace('$N', this.noteTemplate(note));
-    }
 
     setNotes(inputString, key, base) {
         
         let keyCode = WrittenNote.fromString(key).getCode(0);
-        let baseCode = base === SAME ? keyCode : Note.fromString(base).getCode(0);
+        let baseCode = base === SAME ? keyCode : WrittenNote.fromString(base).getCode(0);
 
         this.staves = [];
 
