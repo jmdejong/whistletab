@@ -1,4 +1,47 @@
+"use strict";
 
+const FINGERINGS = [
+    '------',
+    '-----h',
+    '-----o',
+    '----ho',
+    '----oo',
+    '---ooo',
+    '--Hooo',
+    '--oooo',
+    '-Hoooo',
+    '-ooooo',
+    'o--ooo',
+    'oooooo',
+
+    'o-----',
+    '-----h',
+    '-----o',
+    '----ho',
+    '----oo',
+    '---ooo',
+    '--o--o',
+    '--oooo',
+    '-o-ooo',
+    '-ooooo',
+    'o-o---',
+    'ooo---',
+
+    'o-----',
+    null,
+    '-----o',
+    null,
+    '----oo',
+    '---ooo',
+    null,
+    'o----o',
+    null,
+    '-ooooo',
+    null,
+    'oooooo'
+];
+
+let NOTES = ["a", null, "b", "c", null, "d", null, "e", "f", null, "g", null];
 
 class Renderer {
     
@@ -62,10 +105,10 @@ class Renderer {
     }
     
     renderNote(note){
-        let tabMissing = false;
-        let relative = note.makeRelative(this.key)
-        let fingering = relative.getFingering();
         let tab = document.getElementById("tab-entry").content.cloneNode(true);
+        
+        let relativeCode = note.code - this.key;
+        let fingering = FINGERINGS[relativeCode];
         let symbols;
         if (fingering === null || fingering === undefined) {
             tab.querySelector("ul").classList.add("error");
@@ -80,14 +123,38 @@ class Renderer {
         symbols.forEach((symbol, index) => {
             items[index].textContent = symbol;
         });
-        let name = NOTES[note.code % 12];
-        if (relative.getOctave() >= 1){
-            name = name.toUpperCase();
+        let [letter, shift] = this.noteName(note);
+        let octave = (relativeCode / 12) |0;
+        if (octave >= 1){
+            letter = letter.toUpperCase();
         }
-        name = name.replace("#", '<span class="sharp">\u266f</span>');
+        let suffix = "";
+        if (shift > 0){
+            suffix = `<span class="sharp">${"\u266f".repeat(shift)}</span>`;
+        } else if (shift < 0){
+            suffix = `<span class="flat">${"\u266d".repeat(-shift)}</span>`;
+        }
+        let name = letter + suffix;
         tab.querySelector(".tab-note--letter").innerHTML = name;
-        tab.querySelector(".note-octave").textContent = "+".repeat(relative.getOctave());
+        tab.querySelector(".note-octave").textContent = "+".repeat(octave);
         
         return tab
     }
+    
+    noteName(note){
+        let shift = note.shift;
+        let letter = NOTES[mod(note.code - shift, 12)];
+        if (letter){
+            // we're fine
+        } else if (shift > 0) {
+            --shift;
+        } else {
+            ++shift;
+        }
+        return [NOTES[mod(note.code - shift, 12)],  shift];
+    }
+}
+
+function mod(a, b){
+    return (a % b + b) % b;
 }

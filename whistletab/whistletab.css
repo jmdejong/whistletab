@@ -190,6 +190,16 @@ input[type="url"] {
   text-shadow: -1px 1px #fff;
 }
 
+.tab-note-text .flat {
+  display: inline-block;
+  vertical-align: 0%;
+  width: 0;
+  margin-left: -0.05em;
+  padding-right: 0.2em;
+  font-size: 90%;
+  text-shadow: -1px 1px #fff;
+}
+
 .tab-note li sup {
   position: absolute;
   top: -0.7em;

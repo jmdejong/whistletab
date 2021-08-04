@@ -26,66 +26,6 @@ const SYMBOL_MAP = {
 }
 
 
-let NOTES = "a a# b c c# d d# e f f# g g#".split(' ');
-
-class RelativeNote {
-    
-    constructor(code){
-        this.code = code;
-    }
-    
-    getOctave(){
-        return this.code / 12 | 0;
-    }
-    
-    
-    getFingering(){
-        return this.fingerings[this.code];
-    }
-    
-    fingerings = [
-        '------',
-        '-----h',
-        '-----o',
-        '----ho',
-        '----oo',
-        '---ooo',
-        '--Hooo',
-        '--oooo',
-        '-Hoooo',
-        '-ooooo',
-        'o--ooo',
-        'oooooo',
-
-        'o-----',
-        '-----h',
-        '-----o',
-        '----ho',
-        '----oo',
-        '---ooo',
-        '--o--o',
-        '--oooo',
-        '-o-ooo',
-        '-ooooo',
-        'o-o---',
-        'ooo---',
-
-        'o-----',
-        null,
-        '-----o',
-        null,
-        '----oo',
-        '---ooo',
-        null,
-        'o----o',
-        null,
-        '-ooooo',
-        null,
-        'oooooo'
-    ];
-}
-
-
 
 
 const SAME = "s";
