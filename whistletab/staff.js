@@ -1,5 +1,5 @@
 /*eslint indent: ["warn", 2] */
-(function (W, D) {
+(function () {
   const DEFAULT_SPACING = 19;
 
   const ALL_NOTES = 'g+ a+ b+ c+ d++ e++ f++ g++ a++ b++ c++'.split(' ');
@@ -11,16 +11,16 @@
   }
 
   function svgEl(name, attrs, content) {
-    const el = D.createElementNS('http://www.w3.org/2000/svg', name);
+    const el = document.createElementNS('http://www.w3.org/2000/svg', name);
     setAttributes(el, attrs);
     if (content) {
-      el.appendChild(D.createTextNode(content));
+      el.appendChild(document.createTextNode(content));
     }
     return el;
   }
 
   function Staff(notes, showNotes, spacing) {
-    this.svg = D.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     this.notes = notes;
     this.showNotes = !!showNotes;
 
@@ -308,4 +308,4 @@
   };
 
   window.Staff = Staff;
-}(window, window.document));
+}());

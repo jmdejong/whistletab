@@ -107,7 +107,7 @@ input[type="url"] {
   width: 20em;
 }
 
-#save-tab-form label + label {
+#saved-tab-form label + label {
   margin-left: 1em;
 }
 
@@ -129,16 +129,16 @@ input[type="url"] {
   width: 1.2em;
 }
 
-.spacing1 .tab-note, .spacing1 .spacer { margin-right: 0.1em; }
-.spacing2 .tab-note, .spacing2 .spacer { margin-right: 0.2em; }
-.spacing3 .tab-note, .spacing3 .spacer { margin-right: 0.3em; }
-.spacing4 .tab-note, .spacing4 .spacer { margin-right: 0.50em; }
-.spacing5 .tab-note, .spacing5 .spacer { margin-right: 0.55em; }
-.spacing6 .tab-note, .spacing6 .spacer { margin-right: 0.60em; }
-.spacing7 .tab-note, .spacing7 .spacer { margin-right: 0.65em; }
-.spacing8 .tab-note, .spacing8 .spacer { margin-right: 0.70em; }
-.spacing9 .tab-note, .spacing9 .spacer { margin-right: 0.75em; }
-.spacing10 .tab-note, .spacing10 .spacer { margin-right: 0.8em; }
+.spacing1 .tab-note, .spacing1 .spacer, .spacing1 .bar { margin-right: 0.1em; }
+.spacing2 .tab-note, .spacing2 .spacer, .spacing2 .bar { margin-right: 0.2em; }
+.spacing3 .tab-note, .spacing3 .spacer, .spacing3 .bar { margin-right: 0.3em; }
+.spacing4 .tab-note, .spacing4 .spacer, .spacing4 .bar { margin-right: 0.50em; }
+.spacing5 .tab-note, .spacing5 .spacer, .spacing5 .bar { margin-right: 0.55em; }
+.spacing6 .tab-note, .spacing6 .spacer, .spacing6 .bar { margin-right: 0.60em; }
+.spacing7 .tab-note, .spacing7 .spacer, .spacing7 .bar { margin-right: 0.65em; }
+.spacing8 .tab-note, .spacing8 .spacer, .spacing8 .bar { margin-right: 0.70em; }
+.spacing9 .tab-note, .spacing9 .spacer, .spacing9 .bar { margin-right: 0.75em; }
+.spacing10 .tab-note, .spacing10 .spacer, .spacing10 .bar { margin-right: 0.8em; }
 
 #spacing-label {
   display: block;
@@ -190,6 +190,16 @@ input[type="url"] {
   text-shadow: -1px 1px #fff;
 }
 
+.tab-note-text .flat {
+  display: inline-block;
+  vertical-align: 0%;
+  width: 0;
+  margin-left: -0.05em;
+  padding-right: 0.2em;
+  font-size: 90%;
+  text-shadow: -1px 1px #fff;
+}
+
 .tab-note li sup {
   position: absolute;
   top: -0.7em;
@@ -228,8 +238,15 @@ input[type="url"] {
   height: 1.5em;
 }
 
+.bar {
+  float: left;
+  height: 1.5em;
+  transform: scale(1,20) translateX(0.4em);
+  width: 1.2em;
+}
+
 .comment .spacer {
-  text-align: center;
+/*   text-align: center; */
   height: 1em;
 }
 
@@ -321,11 +338,13 @@ input[type="url"] {
 
                 .tab-note li.tab-note-text { height: 0; }
 .show-notes     .tab-note li.tab-note-text { height: auto; }
+.show-octaves   .tab-note li.tab-note-text { height: auto; }
 
                 .tab-note--letter { display: none; }
-                .tab-note--letter + sup { display: none; }
 .show-notes     .tab-note--letter { display: inline; }
-.show-notes     .tab-note--letter + sup { display: inline; }
+
+                .note-octave { display: none; }
+.show-octaves   .note-octave { display: inline; }
 
                 .slur, .finger { display: none; }
 .show-fingering .finger, .show-fingering .slur { display: block; }
@@ -334,21 +353,11 @@ body:not(.show-fingering, .show-notes) .tab-note { margin: 0; }
 
 .show-staves .staff { display: block; }
 
-form {
-  box-sizing: border-box;
-  margin: 0 0 1em;
-  padding: 0;
-}
 
-form.tab-list {
-  border: 1px solid #ccc;
-  position: relative;
-  background-color: #fafafa;
-}
 
-.tab-list.collapsed label,
-.tab-list.collapsed .form-buttons,
-.tab-list.collapsed p {
+
+
+.collapsed {
   display: none;
 }
 
@@ -390,9 +399,9 @@ input[type="radio"] {
   margin-bottom: 0.5em;
 }
 
-.tab-list legend {
-  position: absolute;
-  top: 1px;
+.legend {
+/*   position: absolute; */
+  top: 0px;
   left: 0;
   right: 0;
   height: 1.7em;
@@ -403,28 +412,25 @@ input[type="radio"] {
   border-bottom: 1px solid #ccc;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   cursor: pointer;
+  margin: 0px;
 }
 
-.tab-list legend:hover {
+.legend:hover {
   background-color: #fff;
   color: #000;
 }
 
-.tab-list legend::before {
+.legend::before {
   display: inline-block;
   width: 1em;
   content: "\2212";
 }
 
-.tab-list.collapsed legend::before {
+.legend::before {
   color: #000;
   content: "+";
 }
 
-.form-buttons {
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-}
 
 button {
   border: 1px solid #888;
@@ -506,4 +512,31 @@ footer {
 
 #share-url {
   width: 100%;
+  margin: 4px;
+}
+#copy-share-url {
+  margin-left: 20px;
+}
+.url-share {
+    margin-bottom: 24px;
+    margin-top: 24px;
+}
+
+.saved-tab-name {
+    margin-right: 24px;
+}
+.saved-tab-opener {
+    margin-right: 16px;
+}
+.saved-tab-entry {
+    margin-top: 10px;
+}
+.tab-list-container {
+  border: 1px solid #ccc;
+  position: relative;
+  background-color: #fafafa;
+  margin: 10px;
+}
+#saved-tabs-content {
+    padding: 12px;
 }

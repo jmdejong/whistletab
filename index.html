@@ -7,7 +7,7 @@
     <link href="whistletab/whistletab.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="whistletab/favicon.png">
   </head>
-  <body class=" show-notes show-fingering show-lyrics show-staves">
+  <body class=" show-notes show-octaves show-fingering show-lyrics show-staves">
     <h1>Tin Whistle Tab Creator</h1>
     <p>For <em>D-tuned</em> whistles. Use <kbd>#</kbd> after a note to indicate sharp, and <kbd>+</kbd> and <kbd>++</kbd> to indicate upper octaves. Spaces and newlines can be used for grouping, and comments, lyrics and headings can be added by starting a new line with <kbd>-</kbd>, <kbd>-&zwnj;-</kbd> and <kbd>-&zwnj;-&zwnj;-</kbd>.</p>
     <p>Display options are at the <a href="#display-options">bottom of the page &darr;</a></p>
@@ -22,12 +22,44 @@
 
     <div id="tab" class="spacing1"></div>
     
-    <form id="share-url-form" action="#">
-        <label>Sharable url</label>
-        <input id="share-url" readonly></input>
-    </form>
+    <label>
+        Whistle key:
+        <select id="whistle-key">
+            <option value="a">A</option>
+            <option value="a#">A#/B♭</option>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="c#">C#/D♭</option>
+            <option value="d" selected>D</option>
+            <option value="d#">D#/E♭</option>
+            <option value="e">E</option>
+            <option value="f">F</option>
+            <option value="f#">F#/G♭</option>
+            <option value="g">G</option>
+            <option value="g#">G#/A♭</option>
+        </select>
+    </label>
+    <label>
+        Octave base:
+        <select id="octave-base">
+            <option value="s" selected>Same as Key</option>
+            <option value="a">A</option>
+            <option value="a#">A#/B♭</option>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="c#">C#/D♭</option>
+            <option value="d">D</option>
+            <option value="d#">D#/E♭</option>
+            <option value="e">E</option>
+            <option value="f">F</option>
+            <option value="f#">F#/G♭</option>
+            <option value="g">G</option>
+            <option value="g#">G#/A♭</option>
+        </select>
+    </label>
+    
 
-    <form id="save-tab-form" action="#">
+    <div id="save-tab-form" onsubmit="">
       <label>
         Tab name:
         <input type="text" id="tab-name">
@@ -36,55 +68,48 @@
         Source:
         <input type="url" id="tab-source">
       </label>
-
-      <button type="submit" id="save-tab">Save</button>
     </form>
+    
+    <div class="url-share" onsubmit="">
+        <label>Sharable url:</label>
+        <button id="copy-share-url">Copy</button>
+        <a id="open-share-url">Open</a>
+        <input id="share-url" readonly></input>
+    </div>
 
-    <form id="saved-tabs-form" action="#" class="no-saved-tabs tab-list">
-      <fieldset>
-        <legend data-form-name="user">Your tabs</legend>
-        <p>These tabs are saved in your browser's local storage.</p>
-        <div id="tab-list" class="tab-list">
-          <label><input type="radio" name="selected-tab-index" value="0" checked>
-            Some tab name</label>
+    <div id="saved-tabs-form" onsubmit="" class="no-saved-tabs tab-list tab-list-container">
+        <p id="saved-tabs-legend" class="legend">Your tabs</p>
+        <div id="saved-tabs-content">
+            <p>These tabs are saved in your browser's local storage.</p>
+            <button id="save-tab" onclick="">Save this tab</button>
+            <strong id="overwrite-warning" class="warning" hidden>This will overwrite the existing saved tab with the same name!</strong>
+            <div id="tab-list" class="tab-list">Loading</div>
         </div>
-        <div class="form-buttons">
-          <button type="submit" id="load-tab">Load tab</button>
-          <button type="button" id="overwrite-tab" class="warning">Overwrite tab</button>
-          <button type="button" id="delete-tab" class="danger">Delete tab</button>
-        </div>
-      </fieldset>
-    </form>
-
-    <form id="server-tabs-form" action="#" class="tab-list collapsed">
-      <fieldset>
-        <legend data-form-name="server">Ready-made tabs</legend>
-        <p>These are tabs I found around the internet and collected here.</p>
-        <div id="server-tab-list" class="tab-list"></div>
-        <div class="form-buttons">
-          <button type="submit" id="load-server-tab">Load tab</button>
-        </div>
-      </fieldset>
-    </form>
+    </div>
 
     <fieldset id="display-options">
       <legend>Display options</legend>
       <label class="break-float"><input type="checkbox" id="white-background"> White background</label>
       <label class="break-float"><input type="checkbox" checked id="show-fingering"> Show fingering</label>
       <label class="break-float"><input type="checkbox" checked id="show-notes"> Show notes</label>
+      <label class="break-float"><input type="checkbox" checked id="show-octaves"> Show octaves</label>
       <label class="break-float"><input type="checkbox" checked id="show-lyrics"> Show lyrics</label>
-      <label class="break-float"><input type="checkbox" checked id="show-staves"> Show staves</label>
-      <label class="break-float"><input type="checkbox" checked id="show-staff-notes"> Show staff notes</label>
+<!--       <label class="break-float"><input type="checkbox" id="show-staves"> Show staves</label> -->
+<!--       <label class="break-float"><input type="checkbox" id="show-staff-notes"> Show staff notes</label> -->
     </fieldset>
 
-    <template id="tab-entry"><ul class="tab-note">
+    <template id="tab-entry">
+      <ul class="tab-note">
         <li class="finger">$0</li>
         <li class="finger">$1</li>
         <li class="finger">$2</li>
         <li class="finger">$3</li>
         <li class="finger">$4</li>
         <li class="finger">$5</li>
-        <li class="tab-note-text">$N</li>
+        <li class="tab-note-text">
+          <span class="tab-note--letter"></span>
+          <sup class="note-octave"></sup>
+        </li>
       </ul></template>
 
     <template id="tab-entry-error">
@@ -95,13 +120,26 @@
         <li>?</li>
         <li>?</li>
         <li>?</li>
-        <li class="tab-note">?</li>
+        <li class="tab-note-text">?</li>
       </ul>
     </template>
-
-    <script>
-      window.serverTabs = [];
-    </script>
+    
+    <template id="tab-entry-bar">
+        <span class="bar">|</span>
+    </template>
+    
+    
+    <template id="tab-entry-spacer">
+      <span class="spacer"></span>
+    </template>
+    
+    <template id="tab-entry-slur">
+      <span class="slur">(</span>
+    </template>
+    
+    <template id="line-break-template">
+    <div class="line-break"></div>
+    </template>
 
     <footer>
       <p>
@@ -109,11 +147,16 @@
         <a href="https://github.com/jmdejong/whistletab">Source code</a>
       </p>
     </footer>
-    <script src="whistletab/tab.js"></script>
-    <script src="whistletab/tabstorage.js"></script>
-    <script src="whistletab/input.js"></script>
     <script src="whistletab/encoder.js"></script>
-    <script src="whistletab/staff.js"></script>
-    <script src="whistletab/whistletab.js"></script>
+    <script src="whistletab/tab.js"></script>
+    <script src="whistletab/notesmodel.js"></script>
+    <script src="whistletab/wtformat.js"></script>
+    <script src="whistletab/renderer.js"></script>
+<!--     <script src="whistletab/staffrenderer.js"></script> -->
+<!--     <script src="whistletab/staff.js"></script> -->
+    <script src="whistletab/tabview.js"></script>
+    <script src="whistletab/controller.js"></script>
+    <script src="whistletab/storage.js"></script>
+    <script src="whistletab/main.js"></script>
   </body>
 </html>
