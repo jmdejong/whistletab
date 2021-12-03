@@ -9,7 +9,9 @@
   </head>
   <body class=" show-notes show-octaves show-fingering show-lyrics show-staves">
     <h1>Tin Whistle Tab Creator</h1>
-    <p>For <em>D-tuned</em> whistles. Use <kbd>#</kbd> after a note to indicate sharp, and <kbd>+</kbd> and <kbd>++</kbd> to indicate upper octaves. Spaces and newlines can be used for grouping, and comments, lyrics and headings can be added by starting a new line with <kbd>-</kbd>, <kbd>-&zwnj;-</kbd> and <kbd>-&zwnj;-&zwnj;-</kbd>.</p>
+    <p>Use <kbd>#</kbd> after a note to indicate sharp, and <kdb>_</kdb> to indicate flat.
+    Uppercase letters and/or <kbd>+</kbd> and <kbd>++</kbd> can be used to indicate upper octaves.
+    Spaces and newlines can be used for grouping, and comments, lyrics and headings can be added by starting a new line with <kbd>-</kbd>, <kbd>-&zwnj;-</kbd> and <kbd>-&zwnj;-&zwnj;-</kbd>.</p>
     <p>Display options are at the <a href="#display-options">bottom of the page &darr;</a></p>
 
     <textarea id="notes" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
@@ -68,13 +70,13 @@
         Source:
         <input type="url" id="tab-source">
       </label>
-    </form>
+    </div>
     
     <div class="url-share" onsubmit="">
         <label>Sharable url:</label>
         <button id="copy-share-url">Copy</button>
         <a id="open-share-url">Open</a>
-        <input id="share-url" readonly></input>
+        <input id="share-url" readonly />
     </div>
 
     <div id="saved-tabs-form" onsubmit="" class="no-saved-tabs tab-list tab-list-container">
